@@ -1,5 +1,5 @@
 //
-//  DetailViewController.swift
+//  MapViewController.swift
 //  Map Scriptures
 //
 //  Created by Peter West on 10/22/16.
@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import MapKit
 
-class DetailViewController: UIViewController {
+class MapViewController: UIViewController, MKMapViewDelegate {
 
     @IBOutlet weak var detailDescriptionLabel: UILabel!
 
