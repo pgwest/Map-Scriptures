@@ -39,7 +39,7 @@ class ScriptureRenderer {
 
     // MARK: - Constants
 
-    private struct Constant {
+    struct Constant {
         static let baseUrl = "http://scriptures.byu.edu/mapscrip/"
         static let footnoteVerse = 1000
     }
