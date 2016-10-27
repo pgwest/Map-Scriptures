@@ -14,7 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     //Mark: - Properties
     
     var window: UIWindow?
-
+    static var firstLoad = true
     
     
     //Mark: - Application lifecycle

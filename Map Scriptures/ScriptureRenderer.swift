@@ -125,7 +125,8 @@ class ScriptureRenderer {
         for (geoplace, geotag) in GeoDatabase.sharedGeoDatabase.geoTagsForScriptureId(scriptureId) {
             let startIndex = verseText.characters.index(verseText.startIndex, offsetBy: geotag.startOffset)
             let endIndex = verseText.characters.index(startIndex, offsetBy: geotag.endOffset - geotag.startOffset)
-
+print("geoplace ")
+            print(geoplace)
             collectedGeocodedPlaces.append(geoplace)
 
             // Insert hyperlink for geotag in this verse at the given offsets

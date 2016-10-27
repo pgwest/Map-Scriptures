@@ -8,6 +8,7 @@
 
 import UIKit
 import WebKit
+import MapKit
 
 class ScriptureViewController : UIViewController, WKNavigationDelegate {
     
@@ -17,7 +18,7 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
     
     private weak var mapViewController: MapViewController?
     private var webView: WKWebView!
-    
+    private var currentPath = ""
     
     // Mark: - View controller lifecycle
     
@@ -53,6 +54,28 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
             let navVC = segue.destination as? UINavigationController
             if let mapVC = navVC?.topViewController as? MapViewController {
                 //NEEDSWORk: configure map view controller appropriately 
+
+                let path = currentPath
+                let index = path.index(path.startIndex, offsetBy: ScriptureRenderer.Constant.baseUrl.characters.count)
+                let geoPlace = GeoDatabase.sharedGeoDatabase.geoPlaceForId(Int(path.substring(from: index))!)
+                mapVC.title = book.fullName
+                let currentAnnotation = MKPointAnnotation()
+                
+                currentAnnotation.coordinate = CLLocationCoordinate2DMake((geoPlace?.latitude)!, (geoPlace?.longitude)!)
+                currentAnnotation.title = geoPlace?.placename
+                currentAnnotation.subtitle = nil
+                
+                mapVC.currentRegion = CLLocationCoordinate2DMake((geoPlace?.latitude)!, (geoPlace?.longitude)!)
+                
+                
+                
+                /*
+                
+                mapVC.mapView.addAnnotation(currentAnnotation)
+                
+                let camera = MKMapCamera(lookingAtCenter: CLLocationCoordinate2DMake((geoPlace?.latitude)!, (geoPlace?.longitude)!), fromEyeCoordinate: CLLocationCoordinate2DMake((geoPlace?.viewLatitude)!, (geoPlace?.viewLongitude)!), eyeAltitude: (geoPlace?.viewAltitude)!)
+                mapVC.mapView.setCamera(camera, animated: true)
+                */
             }
             
         }
@@ -70,8 +93,26 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
                 
                 if let mapVC = mapViewController {
                     //Needswork: zoom in on tapped geoplace
+                    print("setting mapVC to MapviewController")
+                    let index = path.index(path.startIndex, offsetBy: ScriptureRenderer.Constant.baseUrl.characters.count)
+                    let geoPlace = GeoDatabase.sharedGeoDatabase.geoPlaceForId(Int(path.substring(from: index))!)
+                    mapVC.title = book.fullName
+                    let currentAnnotation = MKPointAnnotation()
+                    
+                    currentAnnotation.coordinate = CLLocationCoordinate2DMake((geoPlace?.latitude)!, (geoPlace?.longitude)!)
+                    currentAnnotation.title = geoPlace?.placename
+                    currentAnnotation.subtitle = nil
+                    
+                    mapVC.currentRegion = CLLocationCoordinate2DMake((geoPlace?.latitude)!, (geoPlace?.longitude)!)
+                    
+                    mapVC.mapView.addAnnotation(currentAnnotation)
+                    
+                    let camera = MKMapCamera(lookingAtCenter: CLLocationCoordinate2DMake((geoPlace?.latitude)!, (geoPlace?.longitude)!), fromEyeCoordinate: CLLocationCoordinate2DMake((geoPlace?.viewLatitude)!, (geoPlace?.viewLongitude)!), eyeAltitude: (geoPlace?.viewAltitude)!)
+                    mapVC.mapView.setCamera(camera, animated: true)
                 }
                 else{
+                    print("mapVC not set")
+                    currentPath = path
                     performSegue(withIdentifier: "Show Map", sender: self)
                 }
                 
@@ -91,9 +132,11 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
         if let splitVC = splitViewController {
             if let navVC = splitVC.viewControllers.last as? UINavigationController {
                 mapViewController = navVC.topViewController as? MapViewController
+                print("nav vc top")
             }
             else {
                 mapViewController = splitVC.viewControllers.last as? MapViewController
+                print("split vc last")
             }
         }
         else{
