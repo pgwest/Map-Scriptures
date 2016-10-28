@@ -19,6 +19,7 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
     private weak var mapViewController: MapViewController?
     private var webView: WKWebView!
     private var currentPath = ""
+    private var annotationArray = [MKPointAnnotation]()
     
     // Mark: - View controller lifecycle
     
@@ -36,14 +37,24 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
         super.viewDidLayoutSubviews()
         
         configureDetailViewController()
+        print("did layout")
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let html = ScriptureRenderer.sharedRenderer.htmlForBookId(book.id, chapter: chapter)
-        
+        annotationArray = [MKPointAnnotation]()
+        for geoPlace in ScriptureRenderer.sharedRenderer.collectedGeocodedPlaces {
+            let currentAnnotation = MKPointAnnotation()
+            currentAnnotation.coordinate = CLLocationCoordinate2DMake((geoPlace.latitude), (geoPlace.longitude))
+            currentAnnotation.title = geoPlace.placename
+            currentAnnotation.subtitle = nil
+            annotationArray.append(currentAnnotation)
+           // mapVC.mapView.addAnnotation(currentAnnotation)
+        }
         webView.loadHTMLString(html, baseURL: nil)
+        
     }
     
     
@@ -59,23 +70,43 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
                 let index = path.index(path.startIndex, offsetBy: ScriptureRenderer.Constant.baseUrl.characters.count)
                 let geoPlace = GeoDatabase.sharedGeoDatabase.geoPlaceForId(Int(path.substring(from: index))!)
                 mapVC.title = book.fullName
-                let currentAnnotation = MKPointAnnotation()
+//                let currentAnnotation = MKPointAnnotation()
                 
-                currentAnnotation.coordinate = CLLocationCoordinate2DMake((geoPlace?.latitude)!, (geoPlace?.longitude)!)
-                currentAnnotation.title = geoPlace?.placename
-                currentAnnotation.subtitle = nil
+//                currentAnnotation.coordinate = CLLocationCoordinate2DMake((geoPlace?.latitude)!, (geoPlace?.longitude)!)
+//                currentAnnotation.title = geoPlace?.placename
+//                currentAnnotation.subtitle = nil
                 
                 mapVC.currentRegion = CLLocationCoordinate2DMake((geoPlace?.latitude)!, (geoPlace?.longitude)!)
+                mapVC.currentEyeCoordinate = CLLocationCoordinate2DMake((geoPlace?.viewLatitude)!, (geoPlace?.viewLongitude)!)
+                mapVC.currentEyeAltitude = (geoPlace?.viewAltitude)!
+                
+                let view = mapVC.view
+                if (view != nil){
+                    //view = nil
+                }
+                
+//                print("pre add annotation array")
+//                print(annotationArray)
+
+                for annotation in annotationArray {
+                    print(annotation)
+                    mapVC.mapView.addAnnotation(annotation)
+//                    print("annnotation title")
+//                    print(annotation.title)
+                }
+
+                mapVC.mapView.showAnnotations(annotationArray, animated: true)
+
                 
                 
                 
-                /*
-                
-                mapVC.mapView.addAnnotation(currentAnnotation)
-                
+//                mapVC.mapView.addAnnotation(currentAnnotation)
+//                print("geoplace . latitude")
+//                print(geoPlace?.latitude)
+
                 let camera = MKMapCamera(lookingAtCenter: CLLocationCoordinate2DMake((geoPlace?.latitude)!, (geoPlace?.longitude)!), fromEyeCoordinate: CLLocationCoordinate2DMake((geoPlace?.viewLatitude)!, (geoPlace?.viewLongitude)!), eyeAltitude: (geoPlace?.viewAltitude)!)
                 mapVC.mapView.setCamera(camera, animated: true)
-                */
+ 
             }
             
         }
@@ -92,26 +123,29 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
                 print("Request: \(path), mapViewController: \(mapViewController)")
                 
                 if let mapVC = mapViewController {
-                    //Needswork: zoom in on tapped geoplace
-                    print("setting mapVC to MapviewController")
+                    
                     let index = path.index(path.startIndex, offsetBy: ScriptureRenderer.Constant.baseUrl.characters.count)
                     let geoPlace = GeoDatabase.sharedGeoDatabase.geoPlaceForId(Int(path.substring(from: index))!)
                     mapVC.title = book.fullName
-                    let currentAnnotation = MKPointAnnotation()
                     
-                    currentAnnotation.coordinate = CLLocationCoordinate2DMake((geoPlace?.latitude)!, (geoPlace?.longitude)!)
-                    currentAnnotation.title = geoPlace?.placename
-                    currentAnnotation.subtitle = nil
+//                    let allAnnotations = mapVC.mapView.annotations
+//                    mapVC.mapView.removeAnnotations(allAnnotations)
+                    
+//                   let currentAnnotation = MKPointAnnotation()
+//                    currentAnnotation.coordinate = CLLocationCoordinate2DMake((geoPlace?.latitude)!, (geoPlace?.longitude)!)
+//                    currentAnnotation.title = geoPlace?.placename
+//                    currentAnnotation.subtitle = nil
                     
                     mapVC.currentRegion = CLLocationCoordinate2DMake((geoPlace?.latitude)!, (geoPlace?.longitude)!)
+                    mapVC.currentEyeCoordinate = CLLocationCoordinate2DMake((geoPlace?.viewLatitude)!, (geoPlace?.viewLongitude)!)
+                    mapVC.currentEyeAltitude = (geoPlace?.viewAltitude)!
                     
-                    mapVC.mapView.addAnnotation(currentAnnotation)
+//                    mapVC.mapView.addAnnotation(currentAnnotation)
                     
                     let camera = MKMapCamera(lookingAtCenter: CLLocationCoordinate2DMake((geoPlace?.latitude)!, (geoPlace?.longitude)!), fromEyeCoordinate: CLLocationCoordinate2DMake((geoPlace?.viewLatitude)!, (geoPlace?.viewLongitude)!), eyeAltitude: (geoPlace?.viewAltitude)!)
                     mapVC.mapView.setCamera(camera, animated: true)
                 }
                 else{
-                    print("mapVC not set")
                     currentPath = path
                     performSegue(withIdentifier: "Show Map", sender: self)
                 }
@@ -132,21 +166,37 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
         if let splitVC = splitViewController {
             if let navVC = splitVC.viewControllers.last as? UINavigationController {
                 mapViewController = navVC.topViewController as? MapViewController
-                print("nav vc top")
+                
+                if mapViewController?.mapView != nil {
+                    for annotation in annotationArray {
+                          mapViewController?.mapView.addAnnotation(annotation)
+    //                    print("annotations gettinga added to mapViewController.mapview")
+    //                    print(annotation.title)
+                        
+                            mapViewController?.mapView.showAnnotations(annotationArray, animated: true)
+                    }
+                }
+
             }
             else {
                 mapViewController = splitVC.viewControllers.last as? MapViewController
-                print("split vc last")
+                print("else")
             }
         }
         else{
             mapViewController = nil
+            print("mapview controller")
         }
         
         
     }
-    
-    
+
+/*
+    func showAnnotations(_ annotations: [AnyObject]!,
+                         animated animated: Bool){
+        
+    }
+*/
     
     
     

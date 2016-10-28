@@ -15,6 +15,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     var annotationArray = [MKPointAnnotation]()
     var annotation = MKPointAnnotation()
     var currentRegion = CLLocationCoordinate2DMake(40.2506, -111.65247)
+    var currentEyeCoordinate = CLLocationCoordinate2DMake(40.2406, -111.65247)
+    var currentEyeAltitude = 300.0
 
     //Mark: - Outlets
     
@@ -46,43 +48,64 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         let allAnnotations = self.mapView.annotations
         self.mapView.removeAnnotations(allAnnotations)
         
-        annotation = MKPointAnnotation()
+       // annotation = MKPointAnnotation()
         
-        annotation.coordinate = currentRegion
+       // annotation.coordinate = currentRegion
       //  annotation.title = "Tanner Building"
       //  annotation.subtitle = "BYU Campus"
         
-        mapView.addAnnotation(annotation)
+       // mapView.addAnnotation(annotation)
         
         
-        let camera = MKMapCamera(lookingAtCenter: CLLocationCoordinate2DMake(40.2506, -111.65247), fromEyeCoordinate: CLLocationCoordinate2DMake(40.2406, -111.65247), eyeAltitude: 300)
-        mapView.setCamera(camera, animated: true)
+        //let camera = MKMapCamera(lookingAtCenter: currentRegion, fromEyeCoordinate: currentEyeCoordinate, eyeAltitude: currentEyeAltitude)
+        //mapView.setCamera(camera, animated: true)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         mapView.removeFromSuperview()
+        
+        let allAnnotations = self.mapView.annotations
+        self.mapView.removeAnnotations(allAnnotations)
     }
 
     @IBAction func setMapRegion(_ sender: AnyObject) {
-        let region = MKCoordinateRegionMake(currentRegion, MKCoordinateSpanMake(0.1, 0.1))
-        mapView.setRegion(region, animated: true)
+        if (mapView.annotations.count > 1){
+            var annotations = [MKAnnotation]()
+            for annotation in mapView.annotations {
+                if annotation is MKUserLocation {
+                    
+                } else {
+                    annotations.append(annotation)
+                }
+            }
+            mapView.showAnnotations(annotations, animated: true)
+        }
+        else {
+            let region = MKCoordinateRegionMake(currentRegion, MKCoordinateSpanMake(2.0, 2.0))
+            mapView.setRegion(region, animated: true)
+        }
     }
     
     //Mark: - Map view delgate
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if (annotation is MKUserLocation){
+            return nil
+        }
+        
         let reuseIdentifier = "Pin"
         var view = mapView.dequeueReusableAnnotationView(withIdentifier: reuseIdentifier)
         
-        
+
         if view == nil {
             
             let pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseIdentifier)
             
             pinView.canShowCallout = true
             pinView.animatesDrop = true
-//            pinView.pinTintColor = UIColor.red
+            pinView.pinTintColor = UIColor.red
+            print("show callout")
             
             view = pinView
             
@@ -99,16 +122,16 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
-        case .notDetermined:
-            print("NotDetermined")
-        case .restricted:
-            print("Restricted")
-        case .denied:
-            print("Denied")
-        case .authorizedAlways:
-            print("AuthorizedAlways")
+        case .notDetermined: break
+            //print("NotDetermined")
+        case .restricted: break
+            //print("Restricted")
+        case .denied: break
+            //print("Denied")
+        case .authorizedAlways: break
+            //print("AuthorizedAlways")
         case .authorizedWhenInUse:
-            print("AuthorizedWhenInUse")
+            //print("AuthorizedWhenInUse")
             locationManager!.startUpdatingLocation()
         }
     }
@@ -120,6 +143,11 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             let location = locations.first!
             let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate, 500, 500)
             mapView.setRegion(coordinateRegion, animated: true)
+            mapView.showsUserLocation = true
+            locationManager?.stopUpdatingLocation()
+            locationManager = nil
+        }
+        else{
             locationManager?.stopUpdatingLocation()
             locationManager = nil
         }
