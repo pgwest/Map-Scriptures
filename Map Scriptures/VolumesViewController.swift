@@ -10,6 +10,10 @@ import UIKit
 
 class VolumesViewController : UITableViewController {
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        AppDelegate.firstLoad = true
+    }
     
     var volumes = GeoDatabase.sharedGeoDatabase.volumes()
     

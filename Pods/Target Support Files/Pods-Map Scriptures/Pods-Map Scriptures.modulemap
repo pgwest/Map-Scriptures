@@ -1,0 +1,6 @@
+framework module Pods_Map_Scriptures {
+  umbrella header "Pods-Map Scriptures-umbrella.h"
+
+  export *
+  module * { export * }
+}
