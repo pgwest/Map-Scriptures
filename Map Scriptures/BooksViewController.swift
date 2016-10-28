@@ -25,8 +25,6 @@ class BooksViewController : UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "BookCell", for: indexPath)
         
         cell.textLabel?.text = books[indexPath.row].fullName
-        //NEEDSWORK 
-        
         
         return cell
     }
@@ -45,6 +43,23 @@ class BooksViewController : UITableViewController {
                 }
             }
         }
+        else if segue.identifier == "Show Scripture1" {
+            if let destVC = segue.destination as? ScriptureViewController {
+                if let indexPath = tableView.indexPathForSelectedRow {
+                    destVC.book = books[indexPath.row]
+                    if books[indexPath.row].id > 201 && books[indexPath.row].id <= 204{
+                        destVC.chapter = Int()
+                    }
+                    else if books[indexPath.row].id == 301 {
+                        destVC.chapter = Int()
+                    }
+                    else{
+                        destVC.chapter = 1 //Int()
+                    }
+                    destVC.title = books[indexPath.row].fullName
+                }
+            }
+        }
     }
     
     
@@ -52,6 +67,17 @@ class BooksViewController : UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //NEEDS WORK
+        
+        if books[indexPath.row].numChapters == nil {
+            performSegue(withIdentifier: "Show Scripture1", sender: self)
+        }
+        else if (books[indexPath.row].numChapters! > 1) {
+            performSegue(withIdentifier: "Show Chapters", sender: self)
+        }
+        else {
+            performSegue(withIdentifier: "Show Scripture1", sender: self)
+        }
+
     }
     
     

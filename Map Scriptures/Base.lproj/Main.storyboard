@@ -148,9 +148,6 @@
                                     <frame key="frameInset" width="375" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <segue destination="eCP-uQ-xEw" kind="show" identifier="Show Chapters" id="fcm-aN-c2t"/>
-                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -159,6 +156,10 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Volume" id="ZDl-PG-rn2"/>
+                    <connections>
+                        <segue destination="kKl-mi-1VN" kind="show" identifier="Show Scripture1" id="XA0-HQ-eMe"/>
+                        <segue destination="eCP-uQ-xEw" kind="show" identifier="Show Chapters" id="2PR-dO-YKI"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="X8t-kU-p2U" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -236,6 +237,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
+        <segue reference="qLL-qa-wCJ"/>
         <segue reference="OaP-VL-2e0"/>
     </inferredMetricsTieBreakers>
 </document>

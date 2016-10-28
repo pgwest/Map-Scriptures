@@ -105,7 +105,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             pinView.canShowCallout = true
             pinView.animatesDrop = true
             pinView.pinTintColor = UIColor.red
-            print("show callout")
             
             view = pinView
             
