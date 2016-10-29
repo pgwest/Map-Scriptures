@@ -14,6 +14,15 @@ class BooksViewController : UITableViewController {
     
     var books: [Book]!
     
+    //Mark:- View lifecycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        AppDelegate.firstLoad = false
+        
+    }
+    
     
     //Mark: - Table view data source
     

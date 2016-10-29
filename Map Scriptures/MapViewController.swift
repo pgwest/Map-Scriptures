@@ -45,8 +45,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        let allAnnotations = self.mapView.annotations
-        self.mapView.removeAnnotations(allAnnotations)
+        //let allAnnotations = self.mapView.annotations
+        //self.mapView.removeAnnotations(allAnnotations)
         
        // annotation = MKPointAnnotation()
         

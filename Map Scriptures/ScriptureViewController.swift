@@ -19,7 +19,7 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
     private var webView: WKWebView!
     private var currentPath = ""
     private var annotationArray = [MKPointAnnotation]()
-    
+    static private var mapView = MKMapView()
     
     // Mark: - View controller lifecycle
     
@@ -64,7 +64,7 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
         if segue.identifier == "Show Map" {
             let navVC = segue.destination as? UINavigationController
             if let mapVC = navVC?.topViewController as? MapViewController {
-                
+
                 //NEEDSWORk: pins not showing up :(
 
                 let path = currentPath
@@ -81,6 +81,8 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
                 if (view != nil){
                     //view = nil
                 }
+
+                configureDetailViewController()
                 
                 for annotation in annotationArray {
                     mapVC.mapView.addAnnotation(annotation)
