@@ -75,7 +75,6 @@ class BooksViewController : UITableViewController {
     //Mark: Table view delgate
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //NEEDS WORK
         
         if books[indexPath.row].numChapters == nil {
             performSegue(withIdentifier: "Show Scripture1", sender: self)

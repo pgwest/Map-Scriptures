@@ -15,7 +15,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     var window: UIWindow?
     static var firstLoad = false
-    
+    static var mapFirstLoad = true
+
     
     //Mark: - Application lifecycle
     
@@ -38,7 +39,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
 
     func splitViewController(_ splitViewController: UISplitViewController, separateSecondaryFrom primaryViewController: UIViewController) -> UIViewController? {
-        //TODO
         
         if let navVC = primaryViewController as? UINavigationController {
             for controller in navVC.viewControllers {

@@ -22,6 +22,25 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     @IBOutlet weak var mapView: MKMapView!
     
+    @IBAction func setMapRegion(_ sender: AnyObject) {
+        if (mapView.annotations.count > 1){
+            var annotations = [MKAnnotation]()
+            for annotation in mapView.annotations {
+                if annotation is MKUserLocation {
+                    
+                } else {
+                    annotations.append(annotation)
+                }
+            }
+            mapView.showAnnotations(annotations, animated: true)
+        }
+        else {
+            let region = MKCoordinateRegionMake(currentRegion, MKCoordinateSpanMake(2.0, 2.0))
+            mapView.setRegion(region, animated: true)
+        }
+    }
+    
+    
     // Mark: - View Controller lifecycel
     
     override func viewDidLoad() {
@@ -45,20 +64,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        //let allAnnotations = self.mapView.annotations
-        //self.mapView.removeAnnotations(allAnnotations)
-        
-       // annotation = MKPointAnnotation()
-        
-       // annotation.coordinate = currentRegion
-      //  annotation.title = "Tanner Building"
-      //  annotation.subtitle = "BYU Campus"
-        
-       // mapView.addAnnotation(annotation)
-        
-        
-        //let camera = MKMapCamera(lookingAtCenter: currentRegion, fromEyeCoordinate: currentEyeCoordinate, eyeAltitude: currentEyeAltitude)
-        //mapView.setCamera(camera, animated: true)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -69,23 +74,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         self.mapView.removeAnnotations(allAnnotations)
     }
 
-    @IBAction func setMapRegion(_ sender: AnyObject) {
-        if (mapView.annotations.count > 1){
-            var annotations = [MKAnnotation]()
-            for annotation in mapView.annotations {
-                if annotation is MKUserLocation {
-                    
-                } else {
-                    annotations.append(annotation)
-                }
-            }
-            mapView.showAnnotations(annotations, animated: true)
-        }
-        else {
-            let region = MKCoordinateRegionMake(currentRegion, MKCoordinateSpanMake(2.0, 2.0))
-            mapView.setRegion(region, animated: true)
-        }
-    }
+
     
     //Mark: - Map view delgate
     

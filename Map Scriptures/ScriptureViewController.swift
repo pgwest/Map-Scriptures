@@ -21,6 +21,9 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
     private var annotationArray = [MKPointAnnotation]()
     static private var mapView = MKMapView()
     
+
+    
+    
     // Mark: - View controller lifecycle
     
     override func loadView() {
@@ -51,10 +54,15 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
             currentAnnotation.title = geoPlace.placename
             currentAnnotation.subtitle = nil
             annotationArray.append(currentAnnotation)
-           // mapVC.mapView.addAnnotation(currentAnnotation)
         }
         webView.loadHTMLString(html, baseURL: nil)
-        
+        if (AppDelegate.mapFirstLoad){
+            self.navigationItem.rightBarButtonItem?.isEnabled = false
+        }
+        else{
+            self.navigationItem.rightBarButtonItem?.isEnabled = true
+        }
+        AppDelegate.mapFirstLoad = false
     }
     
     
@@ -65,12 +73,10 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
             let navVC = segue.destination as? UINavigationController
             if let mapVC = navVC?.topViewController as? MapViewController {
 
-                //NEEDSWORk: pins not showing up :(
-
                 let path = currentPath
                 let index = path.index(path.startIndex, offsetBy: ScriptureRenderer.Constant.baseUrl.characters.count)
                 let geoPlace = GeoDatabase.sharedGeoDatabase.geoPlaceForId(Int(path.substring(from: index))!)
-                mapVC.title = book.fullName
+                mapVC.title = book.fullName + " \(chapter)"
 
                 mapVC.currentRegion = CLLocationCoordinate2DMake((geoPlace?.latitude)!, (geoPlace?.longitude)!)
                 mapVC.currentEyeCoordinate = CLLocationCoordinate2DMake((geoPlace?.viewLatitude)!, (geoPlace?.viewLongitude)!)
@@ -78,9 +84,7 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
                 
                 //load view so mapview isn't nil
                 let view = mapVC.view
-                if (view != nil){
-                    //view = nil
-                }
+                if (view != nil){} //statement to suppress unused warning.
 
                 configureDetailViewController()
                 
@@ -155,15 +159,11 @@ class ScriptureViewController : UIViewController, WKNavigationDelegate {
             }
             else {
                 mapViewController = splitVC.viewControllers.last as? MapViewController
-                print("else")
             }
         }
         else{
             mapViewController = nil
-            print("mapview controller")
         }
-        
-        
     }
 
     
